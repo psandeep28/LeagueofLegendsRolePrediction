@@ -109,6 +109,7 @@ To enhance the dataset and align it with the gameplay context, we created severa
 - Example of the final cleaned dataset:
 
 Part 1: Player Metrics
+
 | position | result | kills | deaths | assists | visionscore | totalgold |
 |:---------|-------:|------:|-------:|--------:|------------:|----------:|
 | top      |      1 |     4 |      1 |       4 |          17 |     10762 |
@@ -118,6 +119,7 @@ Part 1: Player Metrics
 | sup      |      1 |     2 |      1 |      17 |          72 |      8209 |
 
 Part 2: Derived Metrics
+
 | position | kill_participation | gold_efficiency | vision_contribution | damage_output_consistency |
 |:---------|-------------------:|----------------:|--------------------:|--------------------------:|
 | top      |               0.40 |           0.912 |              0.5294 |                    0.0937 |
@@ -150,6 +152,7 @@ Support players have the highest vision scores, as expected, with a median signi
 ></iframe>
 
 ## Interesting Aggregations
+
 | `position`                  |   (`kills`, `mean`) |   (`kills`, `std`) |   (`assists`, `mean`) |   (`assists`, `std`) |   (`dpm`, `mean`) |   (`dpm`, `std`) |   (`visionscore`, `mean`) |   (`visionscore`, `std`) |   (`totalgold`, `mean`) |   (`totalgold`, `std`) |   (`goldat10`, `mean`) |   (`goldat10`, `std`) |   (`golddiffat10`, `mean`) |   (`golddiffat10`, `std`) |
 |----------------------------|--------------------:|-------------------:|----------------------:|---------------------:|------------------:|-----------------:|--------------------------:|-------------------------:|------------------------:|-----------------------:|-----------------------:|----------------------:|---------------------------:|--------------------------:|
 | bot                        |            4.66312  |            3.3921  |               5.73922 |              3.76505 |           685.917 |          256.623 |                   37.404  |                  20.4506 |                13759.1  |                3356.9  |                3457.5  |               432.346 |                          0 |                   657.299 |
