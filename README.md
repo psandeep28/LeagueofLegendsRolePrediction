@@ -1,4 +1,4 @@
-# LeagueofLegendsRolePrediction
+# League of Legends Role Prediction
 
 # Introduction 
 
@@ -169,13 +169,18 @@ Significance Level:
 - α = 0.05
 
 A permutation test was performed by shuffling the result column and recalculating the test statistic 1,000 times to generate a null distribution of 𝑇.
+
 P-value: The proportion of test statistics in the null distribution as extreme as 
 𝑇_observed
 
 Results:
+
 P-value = 0.0: None of the permuted test statistics were as extreme as the observed statistic.
+
 Since 𝑝 < 𝛼, we reject the null hypothesis.
+
 Conclusion:
+
 The data provides strong evidence to conclude that the mean gold difference at 10 minutes is significantly different between winning and losing matches. This suggests that early gold advantage plays a key role in determining match outcomes, aligning with the importance of early game strategy in League of Legends.
 
 
@@ -191,16 +196,24 @@ In League of Legends, roles are associated with unique playstyles, responsibilit
 Features are derived from post-game statistics that would have been available after a match ends. Examples include:
 
 Kills, deaths, assists: Indicators of combat contribution.
+
 Gold metrics (e.g., totalgold, goldat10, gold_efficiency): Indicators of resource accumulation and usage.
+
 Vision metrics (e.g., visionscore, wardsplaced): Indicators of map control.
+
 Damage metrics (e.g., damagetochampions, dpm, damageshare): Indicators of contribution in fights.
+
 Role-specific engineered features (e.g., vision_efficiency, gold_damage_ratio, tankiness_ratio): Capture gameplay nuances relevant to specific roles.
+
 These features are selected because they reflect key gameplay attributes unique to different roles.
 
 ### Evaluation Metric:
 Primary Metric: Accuracy.
+
 Reason: Accuracy measures the proportion of correctly classified roles and is an intuitive way to assess overall model performance for a balanced dataset.
+
 Secondary Metric: F1-score (macro-averaged).
+
 Reason: Since different roles may have imbalanced representation or varying difficulty to classify (e.g., ADC vs. Support), the F1-score captures performance across all classes by balancing precision and recall.
 
 ## Baseline Model 
@@ -224,15 +237,142 @@ Accuracy: The baseline model achieved an accuracy of 43% on the test set.
 Classification Report:
 
 Bot (ADC): Precision: 0.26, Recall: 0.25, F1-Score: 0.26
+
 Jungle: Precision: 0.35, Recall: 0.36, F1-Score: 0.36
+
 Mid: Precision: 0.29, Recall: 0.29, F1-Score: 0.29
+
 Support: Precision: 0.91, Recall: 0.92, F1-Score: 0.92
+
 Top: Precision: 0.31, Recall: 0.31, F1-Score: 0.31
+
 Overall Accuracy: 43%
 
 ### Evaluation of Performance:
 Strengths: The model performs exceptionally well in classifying the Support role, with precision and recall of over 90%. Reasonable performance for Jungle, reflecting the importance of early gold and vision metrics for this role.
+
 Weaknesses: ADC (Bot) and Mid roles show significantly lower precision and recall, indicating the current features are not sufficient to differentiate these roles effectively. The overall accuracy of 43% is modest but expected for a baseline with minimal features.
 
 ### Justification for Model Suitability:
 While the baseline model is relatively simple, it captures some role-specific trends (e.g., high vision scores for Support, early gold for Jungle). However, the low accuracy for ADC and Mid roles suggests that additional features or advanced engineering will be necessary to improve the model's performance. This baseline serves as a foundation for understanding the role prediction problem and highlights the importance of refining features to enhance accuracy.
+
+
+## Final Model: Description and Performance
+
+### Features Added to the Final Model
+To enhance the baseline model, several new features were engineered to capture role-specific gameplay behaviors:
+
+1. **Kill Participation**:
+   - Formula: `(kills + assists) / teamkills`
+   - Relevance: Highlights a player's contribution to team success, essential for roles like Bot and Support.
+
+2. **Gold Efficiency**:
+   - Formula: `totalgold / damagetochampions`
+   - Relevance: Measures how effectively a player translates gold into damage output, crucial for ADC and Mid roles.
+
+3. **Vision Contribution**:
+   - Formula: `(wardsplaced + wardskilled) / visionscore`
+   - Relevance: Tracks map awareness and vision control, especially for Support.
+
+4. **Roaming Potential (Mid)**:
+   - Formula: `killsat15 - killsat10`
+   - Relevance: Captures Mid-lane roaming tendencies to influence other parts of the map.
+
+5. **Tankiness Ratio (Top)**:
+   - Formula: `damagetakenperminute / (damagemitigatedperminute + 1e-5)`
+   - Relevance: Reflects the durability of Top lane players in team fights.
+
+6. **Gold Damage Ratio (Bot)**:
+   - Formula: `goldat15 / (damagetochampions + 1e-5)`
+   - Relevance: Evaluates how well ADCs scale their damage output from gold.
+
+7. **Damage Output Consistency (Mid and ADC)**:
+   - Formula: `damagetochampions / (goldat15 + 1e-5)`
+   - Relevance: Measures damage consistency relative to gold income.
+
+8. **Mid Solo Kills**:
+   - Formula: `killsat10 / (kills + 1e-5)`
+   - Relevance: Captures solo performance in the early game for Mid players.
+
+9. **Bot CS Efficiency**:
+   - Formula: `totalgold / (teamkills + 1e-5)`
+   - Relevance: Highlights farming efficiency for ADCs.
+
+---
+
+### Modeling Algorithm
+- **Algorithm**: Random Forest Classifier
+- **Hyperparameter Tuning**:
+  - GridSearchCV was used to optimize the following parameters:
+    - `n_estimators`: Number of trees in the forest.
+    - `max_depth`: Maximum depth of the trees.
+    - `min_samples_split`: Minimum samples required to split a node.
+  - Best Parameters:
+    - `n_estimators = 200`
+    - `max_depth = 20`
+    - `min_samples_split = 10`
+
+---
+
+### Performance 
+- **Bot**:
+  - Precision: 0.56
+  - Recall: 0.59
+  - F1-Score: 0.58
+  - Support: 3304
+
+- **Jungle**:
+  - Precision: 0.72
+  - Recall: 0.71
+  - F1-Score: 0.71
+  - Support: 3261
+
+- **Mid**:
+  - Precision: 0.48
+  - Recall: 0.40
+  - F1-Score: 0.43
+  - Support: 3367
+
+- **Support**:
+  - Precision: 0.85
+  - Recall: 0.86
+  - F1-Score: 0.86
+  - Support: 3344
+
+- **Top**:
+  - Precision: 0.64
+  - Recall: 0.72
+  - F1-Score: 0.68
+  - Support: 3282
+
+### Overall Metrics
+- **Accuracy**: 65%
+- **Macro Average**:
+  - Precision: 0.65
+  - Recall: 0.66
+  - F1-Score: 0.65
+- **Weighted Average**:
+  - Precision: 0.65
+  - Recall: 0.65
+  - F1-Score: 0.65
+
+---
+
+### Improvements Over Baseline Model
+1. **Higher Accuracy**:
+ - Improved from 43% to 65%, representing a significant increase in prediction capability.
+
+2. **Role-Specific Insights**:
+ - Precision for challenging roles like Mid increased from 29% to 48%.
+ - Bot and Top roles saw major gains in precision and recall due to targeted feature engineering.
+
+3. **Better Generalization**:
+ - Hyperparameter tuning enhanced the model’s ability to generalize across the dataset.
+
+4. **Balanced Predictions**:
+ - Achieved more consistent performance across all roles, with improvements in precision, recall, and F1-score.
+
+---
+
+### Conclusion
+The final model demonstrates significant improvements over the baseline, both in accuracy and role-specific performance. By incorporating domain knowledge into feature engineering and optimizing hyperparameters, the model effectively captures gameplay nuances, providing actionable insights into player roles.
