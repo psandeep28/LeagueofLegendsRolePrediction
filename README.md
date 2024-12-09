@@ -89,3 +89,27 @@ Part 2: Derived Metrics
 | mid      |               0.45 |           0.679 |              0.5417 |                    0.1165 |
 | bot      |               0.75 |           0.757 |              0.5758 |                    0.0984 |
 | sup      |               0.95 |           1.406 |              0.5694 |                    0.0587 |
+
+## Univariate Analysis
+
+<iframe
+  src="assets/dpm_dist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The distribution of Damage Per Minute (DPM) is right-skewed, with most players contributing between 200 and 800 DPM, while outliers exceed 1500 DPM. High DPM values are likely from damage-focused roles like ADC and Mid, whereas lower DPM values likely represent Support players or underperforming games.
+
+
+
+## Bivariate Analysis
+
+<iframe
+  src="assets/vision_score_role.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+Support players have the highest vision scores, as expected, with a median significantly higher than other roles, reflecting their focus on vision control. Jungle and bot roles also show moderate vision scores, while top and mid players contribute the least to vision.
