@@ -45,7 +45,7 @@ The raw dataset contained both **player-level** and **team-level** rows, as indi
 - **Player Rows**: Contain detailed statistics for each of the 10 players in a match.
 - **Team Rows**: Summarize team-level information for each side (e.g., Blue and Red).
 
-#### **Action**: Remove Team Rows
+##### **Action**: Remove Team Rows
 - We focused only on **player rows** (`position != 'team`) to ensure the dataset reflected individual player performance.
 - **Effect**: Simplified analysis by removing irrelevant rows that could confound feature engineering.
 
@@ -150,7 +150,13 @@ Support players have the highest vision scores, as expected, with a median signi
 ></iframe>
 
 ## Interesting Aggregations
-
+| ('position', '')   |   ('kills', 'mean') |   ('kills', 'std') |   ('assists', 'mean') |   ('assists', 'std') |   ('dpm', 'mean') |   ('dpm', 'std') |   ('visionscore', 'mean') |   ('visionscore', 'std') |   ('totalgold', 'mean') |   ('totalgold', 'std') |   ('goldat10', 'mean') |   ('goldat10', 'std') |   ('golddiffat10', 'mean') |   ('golddiffat10', 'std') |
+|:-------------------|--------------------:|-------------------:|----------------------:|---------------------:|------------------:|-----------------:|--------------------------:|-------------------------:|------------------------:|-----------------------:|-----------------------:|----------------------:|---------------------------:|--------------------------:|
+| bot                |            4.66312  |            3.3921  |               5.73922 |              3.76505 |           685.917 |          256.623 |                   37.404  |                  20.4506 |                13759.1  |                3356.9  |                3457.5  |               432.346 |                          0 |                   657.299 |
+| jng                |            2.7583   |            2.45546 |               8.07006 |              4.73928 |           408.352 |          207.646 |                   44.519  |                  17.2263 |                10960    |                2340.89 |                3332.54 |               354.247 |                          0 |                   506.008 |
+| mid                |            3.99686  |            2.89922 |               5.95724 |              3.93386 |           688.277 |          230.92  |                   35.0246 |                  14.6462 |                13346.2  |                3055.78 |                3488.77 |               304.739 |                          0 |                   470.412 |
+| sup                |            0.932178 |            1.21199 |               9.95235 |              5.64557 |           205.088 |          104.729 |                  104.67   |                  37.2195 |                 8074.34 |                1694.54 |                2387.44 |               317.467 |                          0 |                   404.105 |
+| top                |            2.90663  |            2.42174 |               5.19368 |              3.65029 |           558.403 |          211.935 |                   30.6201 |                  11.7312 |                12247.2  |                2838.14 |                3296.38 |               350.509 |                          0 |                   568.317 |
 
 
 # Hypothesis Test
@@ -376,3 +382,31 @@ To enhance the baseline model, several new features were engineered to capture r
 
 ### Conclusion
 The final model demonstrates significant improvements over the baseline, both in accuracy and role-specific performance. By incorporating domain knowledge into feature engineering and optimizing hyperparameters, the model effectively captures gameplay nuances, providing actionable insights into player roles.
+
+# Fairness Analysis
+
+#### Groups and Metric
+- **Group X**: Support role predictions (`sup`).
+- **Group Y**: ADC (Bot) role predictions (`bot`).
+- **Evaluation Metric**: Precision.
+
+#### Hypotheses
+- **Null Hypothesis (\(H_0\))**: The model's precision for Support and ADC roles is the same. Any observed difference is due to random chance.
+- **Alternative Hypothesis (\(H_a\))**: The model's precision for Support is higher than for ADC, indicating potential bias.
+
+#### Test Statistic
+- The observed difference in precision between the Support and ADC roles:
+  \[
+  T = \text{Precision(Support)} - \text{Precision(ADC)}
+  \]
+
+#### Significance Level
+- \( \alpha = 0.05 \)
+
+#### Results
+- **Observed Test Statistic**: \( T = 0.0 \)
+- **Permutation Test \( p \)-Value**: \( p = 1.0 \)
+
+#### Conclusion
+- Since the \( p \)-value is greater than \( \alpha = 0.05 \), we fail to reject the null hypothesis.
+- This suggests that the observed difference in precision between Support and ADC roles is not statistically significant and could be due to random chance. The model appears to perform fairly in terms of precision for these two roles within the analyzed subset.
