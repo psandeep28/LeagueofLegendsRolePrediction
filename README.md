@@ -2,7 +2,43 @@
 
 # Introduction 
 
-## Data Cleaning and Feature Engineering
+### Introduction to the Dataset
+
+This project analyzes a dataset of professional League of Legends (LoL) esports matches, sourced from Oracle's Elixir. The dataset contains detailed post-game statistics for players and teams, spanning multiple tournaments, regions, and years. Each row represents either a player's or team's performance in a specific game, with over 16,000 rows in the cleaned dataset. The dataset provides a rich collection of features capturing gameplay elements such as kills, assists, vision control, gold earned, and damage dealt.
+
+### Central Question
+
+The project aims to address the question: **How can we predict a player's role (Top, Jungle, Mid, ADC, Support) based on their post-game statistics?** This question is significant because understanding the performance profiles of different roles can enhance strategic decisions in professional gameplay, talent scouting, and coaching.
+
+### Why It Matters
+
+League of Legends is one of the most popular esports titles globally, with a massive following and professional ecosystem. Fans, analysts, and teams can use insights from this analysis to:
+1. Evaluate the strengths and weaknesses of specific players based on their role.
+2. Understand role-specific performance metrics that correlate with match success.
+3. Explore how different playstyles influence outcomes and team dynamics.
+
+### Dataset Overview
+
+The cleaned dataset contains **16,558 rows and 38 columns**, focusing on player-level performance metrics. Below are the relevant columns and their descriptions:
+
+| **Column Name**            | **Description**                                                                                   |
+|----------------------------|---------------------------------------------------------------------------------------------------|
+| `position`                 | The player's in-game role (Top, Jungle, Mid, ADC, Support).                                       |
+| `result`                   | Match outcome for the player’s team (1 = Win, 0 = Loss).                                          |
+| `kills`, `deaths`, `assists` | Individual performance metrics representing combat contributions.                                |
+| `visionscore`              | A composite score reflecting a player’s contributions to vision control on the map.              |
+| `totalgold`                | Total gold earned by the player during the game.                                                 |
+| `damagetochampions`        | Total damage dealt to enemy champions.                                                           |
+| `teamkills`, `teamdeaths`  | The total number of kills and deaths for the player’s team.                                      |
+| `golddiffat10`, `golddiffat15` | The player’s team gold advantage (or deficit) at 10 and 15 minutes, respectively.              |
+| `kill_participation`       | Proportion of team kills the player contributed to (kills + assists) / teamkills.                |
+| `gold_efficiency`          | Ratio of total gold earned to damage dealt, indicating resource usage efficiency.                |
+| `vision_contribution`      | Contribution to vision control based on wards placed, wards cleared, and total vision score.     |
+| `damage_output_consistency` | Measures the consistency of damage output relative to gold earned at 15 minutes.                 |
+
+These features provide a comprehensive view of each player's in-game impact and allow us to build models that predict roles based on performance. By focusing on role-specific performance, we aim to uncover key gameplay dynamics and create meaningful insights for the esports community.
+
+# Data Cleaning and Feature Engineering
 
 ### 1. Initial Data Cleaning
 The raw dataset contained both **player-level** and **team-level** rows, as indicated by the `position` column:
@@ -92,6 +128,8 @@ Part 2: Derived Metrics
 
 ## Univariate Analysis
 
+The distribution of Damage Per Minute (DPM) is right-skewed, with most players contributing between 200 and 800 DPM, while outliers exceed 1500 DPM. High DPM values are likely from damage-focused roles like ADC and Mid, whereas lower DPM values likely represent Support players or underperforming games.
+
 <iframe
   src="assets/dpm_dist.html"
   width="800"
@@ -99,11 +137,10 @@ Part 2: Derived Metrics
   frameborder="0"
 ></iframe>
 
-The distribution of Damage Per Minute (DPM) is right-skewed, with most players contributing between 200 and 800 DPM, while outliers exceed 1500 DPM. High DPM values are likely from damage-focused roles like ADC and Mid, whereas lower DPM values likely represent Support players or underperforming games.
-
-
 
 ## Bivariate Analysis
+
+Support players have the highest vision scores, as expected, with a median significantly higher than other roles, reflecting their focus on vision control. Jungle and bot roles also show moderate vision scores, while top and mid players contribute the least to vision.
 
 <iframe
   src="assets/vision_score_role.html"
@@ -112,4 +149,90 @@ The distribution of Damage Per Minute (DPM) is right-skewed, with most players c
   frameborder="0"
 ></iframe>
 
-Support players have the highest vision scores, as expected, with a median significantly higher than other roles, reflecting their focus on vision control. Jungle and bot roles also show moderate vision scores, while top and mid players contribute the least to vision.
+## Interesting Aggregations
+
+
+
+# Hypothesis Test
+
+Question:
+Does Gold Difference at 10 Minutes Differ by Match Outcome?
+
+H_0: The mean gold difference at 10 minutes is the same for winning and losing matches.
+
+H_a: The mean gold difference at 10 minutes is the different for winning and losing matches.
+
+Test Statistic: The observed difference in mean golddiffat10 between winning and losing matches:
+- T: x_win - x_loss
+
+Significance Level: 
+- α = 0.05
+
+A permutation test was performed by shuffling the result column and recalculating the test statistic 1,000 times to generate a null distribution of 𝑇.
+P-value: The proportion of test statistics in the null distribution as extreme as 
+𝑇_observed
+
+Results:
+P-value = 0.0: None of the permuted test statistics were as extreme as the observed statistic.
+Since 𝑝 < 𝛼, we reject the null hypothesis.
+Conclusion:
+The data provides strong evidence to conclude that the mean gold difference at 10 minutes is significantly different between winning and losing matches. This suggests that early gold advantage plays a key role in determining match outcomes, aligning with the importance of early game strategy in League of Legends.
+
+
+# Prediction Problem: Classifying Player Roles from Post-Game Data
+
+## The Problem:
+This is a multiclass classification problem, where the objective is to predict a player's role (Top, Jungle, Mid, ADC, or Support) based on their post-game metrics. The response variable is the position column, which contains five distinct classes corresponding to the roles.
+
+### Why This Problem?
+In League of Legends, roles are associated with unique playstyles, responsibilities, and metrics (e.g., Supports focus on vision, while ADCs excel in damage output). Identifying a player's role based on metrics enables insights into role-specific performance and helps coaches or analysts evaluate gameplay.
+
+### Features Used for Prediction:
+Features are derived from post-game statistics that would have been available after a match ends. Examples include:
+
+Kills, deaths, assists: Indicators of combat contribution.
+Gold metrics (e.g., totalgold, goldat10, gold_efficiency): Indicators of resource accumulation and usage.
+Vision metrics (e.g., visionscore, wardsplaced): Indicators of map control.
+Damage metrics (e.g., damagetochampions, dpm, damageshare): Indicators of contribution in fights.
+Role-specific engineered features (e.g., vision_efficiency, gold_damage_ratio, tankiness_ratio): Capture gameplay nuances relevant to specific roles.
+These features are selected because they reflect key gameplay attributes unique to different roles.
+
+### Evaluation Metric:
+Primary Metric: Accuracy.
+Reason: Accuracy measures the proportion of correctly classified roles and is an intuitive way to assess overall model performance for a balanced dataset.
+Secondary Metric: F1-score (macro-averaged).
+Reason: Since different roles may have imbalanced representation or varying difficulty to classify (e.g., ADC vs. Support), the F1-score captures performance across all classes by balancing precision and recall.
+
+## Baseline Model 
+
+### Model Overview:
+The baseline model is a Random Forest Classifier used to predict a player’s role (position) based on a set of gameplay metrics. The model pipeline includes preprocessing steps for both numeric and categorical features and uses a decision-tree-based classifier for prediction.
+
+### Features Used:
+1. visionscore (Quantitative): Indicates a player’s contribution to map vision, critical for Support and Jungle roles.
+
+2. goldat10 (Quantitative): Represents the player’s gold accumulated at 10 minutes, a proxy for early-game performance.
+
+3. result (Nominal):Match outcome (1 for win, 0 for loss), reflecting team performance.
+
+Preprocessing:
+- Numeric Features: Scaled using StandardScaler to normalize the data, ensuring numerical stability for the classifier.
+- Categorical Features: Encoded using OneHotEncoder to convert the result column into a binary representation.
+
+### Model Performance:
+Accuracy: The baseline model achieved an accuracy of 43% on the test set.
+Classification Report:
+
+Bot (ADC): Precision: 0.26, Recall: 0.25, F1-Score: 0.26
+Jungle: Precision: 0.35, Recall: 0.36, F1-Score: 0.36
+Mid: Precision: 0.29, Recall: 0.29, F1-Score: 0.29
+Support: Precision: 0.91, Recall: 0.92, F1-Score: 0.92
+Top: Precision: 0.31, Recall: 0.31, F1-Score: 0.31
+Overall Accuracy: 43%
+
+### Evaluation of Performance:
+Strengths: The model performs exceptionally well in classifying the Support role, with precision and recall of over 90%. Reasonable performance for Jungle, reflecting the importance of early gold and vision metrics for this role.
+Weaknesses: ADC (Bot) and Mid roles show significantly lower precision and recall, indicating the current features are not sufficient to differentiate these roles effectively. The overall accuracy of 43% is modest but expected for a baseline with minimal features.
+
+### Justification for Model Suitability:
+While the baseline model is relatively simple, it captures some role-specific trends (e.g., high vision scores for Support, early gold for Jungle). However, the low accuracy for ADC and Mid roles suggests that additional features or advanced engineering will be necessary to improve the model's performance. This baseline serves as a foundation for understanding the role prediction problem and highlights the importance of refining features to enhance accuracy.
