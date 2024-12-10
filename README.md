@@ -161,6 +161,8 @@ Support players have the highest vision scores, as expected, with a median signi
 | sup                        |            0.932178 |            1.21199 |               9.95235 |              5.64557 |           205.088 |          104.729 |                  104.67   |                  37.2195 |                 8074.34 |                1694.54 |                2387.44 |               317.467 |                          0 |                   404.105 |
 | top                        |            2.90663  |            2.42174 |               5.19368 |              3.65029 |           558.403 |          211.935 |                   30.6201 |                  11.7312 |                12247.2  |                2838.14 |                3296.38 |               350.509 |                          0 |                   568.317 |
 
+This table summarizes performance metrics by player position, highlighting each role’s unique contributions. Bot leads in kills (4.66) and damage per minute (DPM ~685), reflecting its role as a primary damage dealer, while Support dominates assists (9.95) and vision score (104.67), focusing on utility and map control. Mid and Top show balanced contributions, with Mid excelling in versatility. Jungle supports map control with high vision scores (44.52). The consistent golddiffat10 across roles suggests balanced matches early on. These insights reveal each position's distinct priorities and impact in competitive play.
+
 # Missingness Mechanism 
 
 ## NMAR Analysis 
