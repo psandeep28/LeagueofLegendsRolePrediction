@@ -161,6 +161,63 @@ Support players have the highest vision scores, as expected, with a median signi
 | sup                        |            0.932178 |            1.21199 |               9.95235 |              5.64557 |           205.088 |          104.729 |                  104.67   |                  37.2195 |                 8074.34 |                1694.54 |                2387.44 |               317.467 |                          0 |                   404.105 |
 | top                        |            2.90663  |            2.42174 |               5.19368 |              3.65029 |           558.403 |          211.935 |                   30.6201 |                  11.7312 |                12247.2  |                2838.14 |                3296.38 |               350.509 |                          0 |                   568.317 |
 
+# Missingness Mechanism 
+
+## NMAR Analysis 
+
+I believe the column killsat25 is likely Not Missing At Random (NMAR) because its missingness may depend on unobserved values. For instance, teams in one-sided matches might avoid reporting poor performance metrics, or missingness could occur if the game duration didn’t reach 25 minutes.
+
+To make this Missing At Random (MAR), additional data such as match duration, game outcomes (e.g., forfeits), league metadata, or team resources could explain the missingness using observable factors rather than the unreported killsat25 values.
+
+## Missingness Dependency
+
+<iframe
+  src="assets/dist_pos.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+<iframe
+  src="assets/emp_dist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+### Interpretation of the Graphs
+
+#### **1. Distribution of Position When `playerid` is Missing or Not**
+- The graph illustrates the frequency distribution of `position` when `playerid` is missing versus when it is not missing.
+- **Observation**:
+  - The `team` position accounts for the overwhelming majority of missing values in the `playerid` column.
+  - For other positions (`jng`, `sup`, `bot`, `mid`, `top`), the frequency of missing and non-missing `playerid` is nearly identical, indicating no significant missingness in these positions.
+- **Implication**:
+  - This distribution strongly suggests that the missingness in `playerid` is concentrated within the `team` position.
+
+---
+
+#### **2. Adjusted Permutation Test for Dependency on Position**
+- The adjusted permutation test evaluates whether the missingness of `playerid` is dependent on `position`.
+- **Observation**:
+  - The observed test statistic (red dashed line) lies far outside the null distribution (blue histogram), confirming a significant difference in missingness proportions across `position`.
+  - The p-value is 0.0000, indicating that the dependency is highly statistically significant.
+- **Implication**:
+  - This result confirms that the missingness in `playerid` is not random but systematically linked to the `position` column.
+
+---
+
+#### **Missing by Design**
+- The dependency of `playerid` missingness on the `team` position suggests that the missing values are **Missing by Design (MBD)**:
+  - In the dataset, `team` represents a collective entity, not an individual player. Therefore, it is logical that a `playerid` would not exist for entries categorized as `team`.
+  - This indicates that the missingness is intentional and reflects the nature of the data collection process rather than a failure to capture data or a random occurrence.
+  - For positions like `jng`, `sup`, `bot`, `mid`, and `top`, `playerid` is present as these represent individual players, making the absence of `playerid` for `team` an intentional design decision.
+
+---
+
+### Conclusion
+The missingness in `playerid` is heavily concentrated in the `team` position and is **Missing by Design (MBD)**. The dataset design intentionally excludes `playerid` for team-level entries, as `playerid` is irrelevant for collective entities. This insight is critical for interpreting the dataset and confirms that no imputation or statistical handling is necessary for these missing values.
+
 # Hypothesis Test
 
 Question:
