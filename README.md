@@ -450,22 +450,20 @@ The final model demonstrates significant improvements over the baseline, both in
 - **Evaluation Metric**: Precision.
 
 #### Hypotheses
-- **Null Hypothesis (\(H_0\))**: The model's precision for Support and ADC roles is the same. Any observed difference is due to random chance.
-- **Alternative Hypothesis (\(H_a\))**: The model's precision for Support is higher than for ADC, indicating potential bias.
+- **Null Hypothesis (H0)**: The model's precision for Support and ADC roles is the same. Any observed difference is due to random chance.
+- **Alternative Hypothesis (Ha)**: The model's precision for Support is higher than for ADC, indicating potential bias.
 
 #### Test Statistic
 - The observed difference in precision between the Support and ADC roles:
-  \[
-  T = \text{Precision(Support)} - \text{Precision(ADC)}
-  \]
+  - T = Precision(Support) - Precision(ADC)
 
 #### Significance Level
-- \( \alpha = 0.05 \)
+- Alpha (α) = 0.05
 
 #### Results
-- **Observed Test Statistic**: \( T = 0.0 \)
-- **Permutation Test \( p \)-Value**: \( p = 1.0 \)
+- **Observed Test Statistic**: T = 0.0
+- **Permutation Test p-Value**: p = 1.0
 
 #### Conclusion
-- Since the \( p \)-value is greater than \( \alpha = 0.05 \), we fail to reject the null hypothesis.
+- Since the p-value is greater than α = 0.05, we fail to reject the null hypothesis.
 - This suggests that the observed difference in precision between Support and ADC roles is not statistically significant and could be due to random chance. The model appears to perform fairly in terms of precision for these two roles within the analyzed subset.
